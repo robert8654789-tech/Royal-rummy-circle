@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Royal Rummy Circle - Play Classic Card Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        
+        :root {
+            --primary: #0f172a;
+            --secondary: #1e293b;
+            --accent: #f59e0b;
+            --text: #f8fafc;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--primary);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+        
+        .card {
+            width: 80px;
+            height: 120px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .card.red {
+            color: #dc2626;
+        }
+        
+        .card.black {
+            color: #1e293b;
+        }
+        
+        .card-value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .card-suit {
+            font-size: 20px;
+        }
+        
+        .table {
+            background-image: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .table::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('https://placehold.co/1600x900');
+            background-size: cover;
+            opacity: 0.1;
+            z-index: 0;
+        }
+        
+        .player-area {
+            min-height: 150px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .discard-pile {
+            min-height: 120px;
+            position: relative;
+        }
+        
+        .status-message {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border-radius: 8px;
+            padding: 12px 24px;
+            transition: all 0.3s ease;
+        }
+        
+        .chip {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            margin: 0 2px;
+        }
+        
+        .gold-chip {
+            background: radial-gradient(circle at 30% 30%, #FFD700, #D4AF37);
+        }
+        
+        .silver-chip {
+            background: radial-gradient(circle at 30% 30%, #C0C0C0, #A8A8A8);
+        }
+        
+        .blink {
+            animation: blink-animation 1s steps(5, start) infinite;
+        }
+        
+        @keyframes blink-animation {
+            to {
+                visibility: hidden;
+            }
+        }
+        
+        @media (max-width: 767px) {
+            .card {
+                width: 60px;
+                height: 90px;
+            }
+            
+            .card-value {
+                font-size: 18px;
+            }
+            
+            .card-suit {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4">
+    <!-- Header -->
+    <header class="container mx-auto mb-8">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center mb-4 md:mb-0">
+                <img src="https://placehold.co/120x60" alt="Royal Rummy Circle Logo featuring a golden crown and playing cards" class="mr-4">
+                <h1 class="text-3xl font-bold">Royal Rummy Circle</h1>
+            </div>
+            <div class="flex items-center">
+                <div class="flex items-center mr-6">
+                    <div class="bg-yellow-500 rounded-full w-8 h-8 flex items-center justify-center mr-2">
+                        <span class="text-xs font-bold">500</span>
+                    </div>
+                    <span class="font-semibold">Coins</span>
+                </div>
+                <button class="bg-gradient-to-r from-amber-500 to-yellow-600 px-6 py-2 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all">
+                    Deposit
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Game Area -->
+    <div class="container mx-auto p-4 md:p-8 rounded-xl table">
+        <!-- Game Info -->
+        <div class="flex justify-between items-center mb-8">
+            <div class="text-xl font-semibold">Rummy Points: <span class="text-yellow-400">80</span></div>
+            <div class="text-xl font-semibold">Players: <span class="text-yellow-400">4/6</span></div>
+        </div>
+
+        <!-- Opponents Area -->
+        <div class="grid grid-cols-3 gap-4 mb-8 player-area">
+            <!-- Opponent 1 -->
+            <div class="bg-slate-800 bg-opacity-50 rounded-lg p-3 text-center">
+                <div class="flex justify-center mb-2">
+                    <img src="https://placehold.co/60" alt="Opponent 1 avatar - male with glasses and beard" class="rounded-full border-amber-500 border-2">
+                </div>
+                <div class="font-semibold">Player_1</div>
+                <div class="text-sm">Cards: 10</div>
+            </div>
+
+            <!-- Opponent 2 -->
+            <div class="bg-slate-800 bg-opacity-50 rounded-lg p-3 text-center">
+                <div class="flex justify-center mb-2">
+                    <img src="https://placehold.co/60" alt="Opponent 2 avatar - female with long hair smiling" class="rounded-full border-amber-500 border-2">
+                </div>
+                <div class="font-semibold">Player_2</div>
+                <div class="text-sm">Cards: 7</div>
+            </div>
+
+            <!-- Opponent 3 -->
+            <div class="bg-slate-800 bg-opacity-50 rounded-lg p-3 text-center">
+                <div class="flex justify-center mb-2">
+                    <img src="https://placehold.co/60" alt="Opponent 3 avatar - young male with cap" class="rounded-full border-amber-500 border-2">
+                </div>
+                <div class="font-semibold">Player_3</div>
+                <div class="text-sm">Cards: 9</div>
+            </div>
+        </div>
+
+        <!-- Discard Pile and Draw Pile -->
+        <div class="flex justify-center items-center mb-12">
+            <div class="discard-pile mx-4">
+                <div class="card bg-gradient-to-b from-amber-100 to-amber-50 flex-col">
+                    <div class="card-value black">10</div>
+                    <div class="card-suit black">♦</div>
+                </div>
+            </div>
+            <div class="card bg-gradient-to-b from-green-100 to-green-50 mx-4">
+                <div class="text-slate-800 text-center">
+                    <div class="font-bold text-xl">DRAW</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Message -->
+        <div class="flex justify-center mb-8">
+            <div class="status-message blink">
+                <span class="text-yellow-400 font-semibold">Player_1's turn</span>
+            </div>
+        </div>
+
+        <!-- Player Cards -->
+        <div class="flex flex-wrap justify-center player-area">
+            <div class="card red">
+                <div class="card-value">A</div>
+                <div class="card-suit">♥</div>
+            </div>
+            <div class="card black">
+                <div class="card-value">2</div>
+                <div class="card-suit">♣</div>
+            </div>
+            <div class="card black">
+                <div class="card-value">3</div>
+                <div class="card-suit">♠</div>
+            </div>
+            <div class="card red">
+                <div class="card-value">4</div>
+                <div class="card-suit">♦</div>
+            </div>
+            <div class="card black">
+                <div class="card-value">5</div>
+                <div class="card-suit">♣</div>
+            </div>
+            <div class="card red">
+                <div class="card-value">6</div>
+                <div class="card-suit">♥</div>
+            </div>
+            <div class="card black">
+                <div class="card-value">7</div>
+                <div class="card-suit">♠</div>
+            </div>
+            <div class="card red">
+                <div class="card-value">8</div>
+                <div class="card-suit">♦</div>
+            </div>
+            <div class="card black">
+                <div class="card-value">9</div>
+                <div class="card-suit">♣</div>
+            </div>
+            <div class="card red">
+                <div class="card-value">10</div>
+                <div class="card-suit">♥</div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-center mt-8">
+            <button class="bg-gradient-to-r from-green-500 to-emerald-600 px-6 py-3 rounded-lg font-semibold shadow-lg mx-2 hover:shadow-xl transition-all">
+                Draw Card
+            </button>
+            <button class="bg-gradient-to-r from-red-500 to-pink-600 px-6 py-3 rounded-lg font-semibold shadow-lg mx-2 hover:shadow-xl transition-all">
+                Discard
+            </button>
+            <button class="bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-3 rounded-lg font-semibold shadow-lg mx-2 hover:shadow-xl transition-all">
+                Declare
+            </button>
+        </div>
+    </div>
+
+    <!-- Game Controls -->
+    <div class="container mx-auto mt-8 flex flex-wrap justify-center gap-4">
+        <button class="bg-gray-700 px-4 py-2 rounded-lg hover:bg-gray-600 transition-all">
+            Sort Cards
+        </button>
+        <button class="bg-gray-700 px-4 py-2 rounded-lg hover:bg-gray-600 transition-all">
+            Group by Suit
+        </button>
+        <button class="bg-gray-700 px-4 py-2 rounded-lg hover:bg-gray-600 transition-all">
+            Group by Sequence
+        </button>
+        <button class="bg-gray-700 px-4 py-2 rounded-lg hover:bg-gray-600 transition-all">
+            Chat
+        </button>
+        <button class="bg-gray-700 px-4 py-2 rounded-lg hover:bg-gray-600 transition-all">
+            Settings
+        </button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="container mx-auto mt-12 text-center text-sm text-gray-400">
+        <div class="flex flex-wrap justify-center gap-4 mb-4">
+            <a href="#" class="hover:text-amber-400 transition-colors">How to Play</a>
+            <a href="#" class="hover:text-amber-400 transition-colors">Rules</a>
+            <a href="#" class="hover:text-amber-400 transition-colors">Tournaments</a>
+            <a href="#" class="hover:text-amber-400 transition-colors">Leaderboard</a>
+            <a href="#" class="hover:text-amber-400 transition-colors">Support</a>
+            <a href="#" class="hover:text-amber-400 transition-colors">Terms</a>
+            <a href="#" class="hover:text-amber-400 transition-colors">Privacy</a>
+        </div>
+        <p>© 2023 Royal Rummy Circle. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Game State Variables
+        let gameState = {
+            deck: [],
+            discardPile: [],
+            players: [],
+            currentPlayer: 0,
+            gameStarted: false
+        };
+
+        // DOM Elements
+        const playerCardsContainer = document.querySelector('.player-area');
+        const discardPileContainer = document.querySelector('.discard-pile');
+        const statusMessage = document.querySelector('.status-message');
+        const drawButton = document.querySelector('button:nth-of-type(1)');
+        const discardButton = document.querySelector('button:nth-of-type(2)');
+        const declareButton = document.querySelector('button:nth-of-type(3)');
+
+        // Initialize Game
+        function initializeGame() {
+            // Initialize deck
+            const suits = ['♥', '♦', '♣', '♠'];
+            const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+            
+            gameState.deck = [];
+            
+            suits.forEach(suit => {
+                values.forEach(value => {
+                    gameState.deck.push({ suit, value });
+                });
+            });
+            
+            // Shuffle deck
+            gameState.deck = shuffleDeck(gameState.deck);
+            
+            // Initial deal (simplified for UI demo)
+            gameState.gameStarted = true;
+            
+            // Add first card to discard pile
+            gameState.discardPile.push(gameState.deck.pop());
+            updateDiscardPile();
+            
+            // Update UI
+            updateStatusMessage(`Game started! Your turn.`);
+        }
+
+        // Helper function to shuffle deck
+        function shuffleDeck(deck) {
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+            return deck;
+        }
+
+        // Update discard pile display
+        function updateDiscardPile() {
+            if (gameState.discardPile.length > 0) {
+                const card = gameState.discardPile[gameState.discardPile.length - 1];
+                discardPileContainer.innerHTML = `
+                    <div class="card ${card.suit === '♥' || card.suit === '♦' ? 'red' : 'black'}">
+                        <div class="card-value">${card.value}</div>
+                        <div class="card-suit">${card.suit}</div>
+                    </div>
+                `;
+            }
+        }
+
+        // Update status message
+        function updateStatusMessage(message) {
+            statusMessage.innerHTML = `<span class="text-yellow-400 font-semibold">${message}</span>`;
+        }
+
+        // Event Listeners
+        drawButton.addEventListener('click', function() {
+            if (!gameState.gameStarted) return;
+            
+            // Simulate drawing a card
+            const drawnCard = gameState.deck.pop();
+            
+            // Update UI
+            updateStatusMessage(`You drew a ${drawnCard.value} of ${drawnCard.suit}`);
+            
+            // Add animation for drawing a card would go here
+        });
+
+        discardButton.addEventListener('click', function() {
+            if (!gameState.gameStarted) return;
+            
+            // In a real game, you would select a card first
+            updateStatusMessage(`Select a card to discard first`);
+            
+            // Add card selection logic would go here
+        });
+
+        declareButton.addEventListener('click', function() {
+            if (!gameState.gameStarted) return;
+            
+            updateStatusMessage(`Declaring... waiting for validation`);
+            
+            // Add declaration logic would go here
+        });
+
+        // Initialize the game when page loads
+        window.addEventListener('DOMContentLoaded', function() {
+            initializeGame();
+            
+            // Add click handler for cards
+            document.querySelectorAll('.card').forEach(card => {
+                card.addEventListener('click', function() {
+                    // Add card selection logic would go here
+                    this.classList.toggle('border-2');
+                    this.classList.toggle('border-yellow-400');
+                    this.classList.toggle('shadow-lg');
+                });
+            });
+        });
+
+        // Responsive adjustments
+        window.addEventListener('resize', function() {
+            // Add responsive adjustments would go here
+        });
+    </script>
+</body>
+</html>
